@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HD PAYMENT</title>
+    
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HD Payment PPOB">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/10149/10149458.png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- html2pdf untuk Cetak Struk -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles for Mobile App feel */
+        body {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        /* Hide scrollbars for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Thermal Receipt Style */
+        .thermal-receipt {
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex justify-center items-center antialiased sm:py-6">
+
+    <!-- Mobile Frame Wrapper -->
+    <div class="w-full max-w-md bg-white min-h-screen sm:min-h-[844px] sm:max-h-[844px] sm:rounded-[36px] sm:shadow-2xl flex flex-col justify-between overflow-hidden relative border-slate-200 sm:border-[8px]">
+        
+        <!-- SECTION 1: AUTHENTICATION (REGISTER / LOGIN VIA EMAIL) -->
+        <div id="auth-screen" class="w-full h-full flex flex-col justify-between p-6 bg-white z-30 overflow-y-auto no-scrollbar">
+            <!-- Auth Header -->
+            <div class="pt-6 text-center">
+                <div class="w-16 h-16 rounded-2xl bg-brand-600 text-white flex items-center justify-center font-bold text-3xl mx-auto shadow-lg shadow-brand-500/30 mb-3">
+                    <i class="fa-solid fa-bolt text-yellow-300"></i>
+                </div>
+                <h1 class="font-extrabold text-2xl text-slate-900 tracking-tight">HD PAYMENT</h1>
+                <p class="text-xs text-slate-500 mt-1">Solusi Transaksi PPOB & Kasir Agen Terbaik</p>
+            </div>
+
+            <!-- Tab Switch (Login / Register) -->
+            <div class="bg-slate-100 p-1 rounded-xl flex my-4">
+                <button id="btn-auth-login" onclick="switchAuthMode('login')" class="flex-1 py-2 rounded-lg text-xs font-bold transition text-brand-600 bg-white shadow-sm">
+                    Masuk
+                </button>
+                <button id="btn-auth-register" onclick="switchAuthMode('register')" class="flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500 hover:text-slate-800">
+                    Daftar Akun
+                </button>
+            </div>
+
+            <!-- FORM LOGIN EMAIL -->
+            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Email Agen</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-slate-400 text-sm"><i class="fa-regular fa-envelope"></i></span>
+                        <input type="email" id="login-email" required placeholder="nama@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs font-medium focus:outline-none focus:border-brand-600">
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold text-slate-700">Kata Sandi</label>
+                        <a href="#" onclick="alert('Silakan cek email Anda untuk reset kata sandi.')" class="text-[11px] text-brand-600 font-medium hover:underline">Lupa Password?</a>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-slate-400 text-sm"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2.5 text-xs font-medium focus:outline-none focus:border-brand-600">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-brand-500/20 transition mt-2">
+                    Masuk ke HD Payment
+                </button>
+            </form>
+
+            <!-- FORM REGISTER EMAIL -->
+            <form id="form-register" onsubmit="handleRegister(event)" class="space-y-3 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap / Nama Loket</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-slate-400 text-sm"><i class="fa-regular fa-user"></i></span>
+                        <input type="text" id="reg-name" required placeholder="Contoh: Budi Santoso" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium focus:outline-none focus:border-brand-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Alamat Email Aktif</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-slate-400 text-sm"><i class="fa-regular fa-envelope"></i></span>
+                        <input type="email" id="reg-email" required placeholder="nama@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium focus:outline-none focus:border-brand-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor HP / WhatsApp</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-slate-400 text-sm"><i class="fa-solid fa-phone"></i></span>
+                        <input type="tel" id="reg-phone" required placeholder="081234567890" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium focus:outline-none focus:border-brand-600">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Buat Kata Sandi</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-slate-400 text-sm"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="reg-password" required minlength="6" placeholder="Minimal 6 Karakter" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium focus:outline-none focus:border-brand-600">
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 pt-1">
+                    <input type="checkbox" id="reg-agree" required class="rounded text-brand-600 focus:ring-brand-500">
+                    <label for="reg-agree" class="text-[11px] text-slate-500">Saya menyetujui Syarat & Ketentuan Agen</label>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-emerald-500/20 transition mt-2">
+                    Daftar Akun Sekarang
+                </button>
+            </form>
+
+            <!-- Quick Demo Login -->
+            <div class="text-center pt-4 border-t border-slate-100">
+                <p class="text-[11px] text-slate-400 mb-2">Atau masuk tanpa registrasi manual:</p>
+                <button onclick="demoQuickLogin()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-700 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-check text-brand-600"></i> Masuk Sebagai Akun Demo
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: MAIN DASHBOARD APP (Hidden by Default until Logged In) -->
+        <div id="main-app" class="w-full h-full flex flex-col justify-between hidden">
+            
+            <!-- NAMA TOKO BAR HEADER -->
+            <header id="top-bar" class="bg-brand-600 text-white px-5 pt-4 pb-6 rounded-b-3xl shadow-md transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold text-lg backdrop-blur-sm">
+                            <i class="fa-solid me-0.5 fa-bolt text-yellow-300"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-base leading-tight">HD PAYMENT</h1>
+                            <span class="text-xs text-blue-100 flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Agen Resmi Pembayaran 
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="togglePWAInstallModal()" class="p-2 bg-white/10 hover:bg-white/20 rounded-full text-xs flex items-center gap-1 px-3 backdrop-blur-sm transition">
+                            <i class="fa-solid fa-download"></i> App
+                        </button>
+                        <button onclick="switchTab('tab-notifikasi')" class="p-2 bg-white/10 hover:bg-white/20 rounded-full relative backdrop-blur-sm transition">
+                            <i class="fa-regular fa-bell text-lg"></i>
+                            <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-brand-600"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Saldo Card -->
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 flex items-center justify-between shadow-inner">
+                    <div>
+                        <p class="text-xs text-blue-100 font-medium">Saldo Agen</p>
+                        <div class="flex items-baseline space-x-1">
+                            <span class="text-xs font-semibold text-blue-200">Rp</span>
+                            <span id="user-balance" class="text-2xl font-extrabold tracking-tight">1.250.000</span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="openTopUpModal()" class="bg-amber-400 hover:bg-amber-500 text-slate-900 px-3 py-1.5 rounded-xl font-bold text-xs shadow-md transition flex items-center gap-1">
+                            <i class="fa-solid fa-circle-plus"></i> Isi Saldo
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area (Scrollable) -->
+            <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-5 pb-20">
+
+                <!-- TAB 1: BERANDA -->
+                <section id="tab-home" class="space-y-5 tab-content">
+                    
+                    <!-- Quick Info / Banner Carousel -->
+                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl p-4 shadow-lg flex items-center justify-between relative overflow-hidden">
+                        <div class="z-10 max-w-[65%]">
+                            <span class="bg-white/20 text-xs px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider">Promo Spesial</span>
+                            <h3 class="font-bold text-sm mt-1">Komisi Double Token PLN!</h3>
+                            <p class="text-[11px] text-emerald-100 mt-0.5">Dapatkan cashback Rp 500/transaksi jam 12.00-15.00 WIB.</p>
+                        </div>
+                        <i class="fa-solid fa-gift text-6xl text-white/15 absolute -right-2 -bottom-2 transform rotate-12"></i>
+                    </div>
+
+                    <!-- PPOB Service Grid (PULSA & PAKET DATA TERPISAH) -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="font-bold text-slate-800 text-sm">Layanan PPOB Utama</h2>
+                            <span class="text-xs text-brand-600 font-semibold cursor-pointer">Lihat Semua</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-3">
+                            
+                            <!-- Pulsa Reguler (Terpisah) -->
+                            <button onclick="openServiceModal('Pulsa Reguler', 'pulsa')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-brand-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-mobile-screen-button text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">Pulsa</span>
+                            </button>
+
+                            <!-- Paket Data Internet (Terpisah) -->
+                            <button onclick="openServiceModal('Paket Data Internet', 'data')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-sky-100 rounded-2xl flex items-center justify-center text-sky-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-wifi text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">Paket Data</span>
+                            </button>
+
+                            <!-- PLN Token -->
+                            <button onclick="openServiceModal('Listrik PLN', 'pln')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-bolt-lightning text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">Listrik PLN</span>
+                            </button>
+
+                            <!-- E-Wallet Topup -->
+                            <button onclick="openServiceModal('E-Wallet', 'ewallet')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-wallet text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">E-Wallet</span>
+                            </button>
+
+                            <!-- PDAM Air -->
+                            <button onclick="openServiceModal('PDAM Air', 'pdam')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-cyan-100 rounded-2xl flex items-center justify-center text-cyan-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-droplet text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">PDAM</span>
+                            </button>
+
+                            <!-- Top Up Direct Game -->
+                            <button onclick="openServiceModal('Top Up Game Direct', 'topup_game')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-gamepad text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">Top Up Game</span>
+                            </button>
+
+                            <!-- Voucher Game Digital -->
+                            <button onclick="openServiceModal('Voucher Game Digital', 'voucher_game')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-ticket text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">Voucher Game</span>
+                            </button>
+
+                            <!-- BPJS Kesehatan -->
+                            <button onclick="openServiceModal('BPJS Kesehatan', 'bpjs')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-rose-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-heart-pulse text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">BPJS</span>
+                            </button>
+
+                            <!-- IndiHome / Internet -->
+                            <button onclick="openServiceModal('Internet & TV', 'internet')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-teal-100 rounded-2xl flex items-center justify-center text-teal-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-tv text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">Internet/TV</span>
+                            </button>
+
+                            <!-- Multifinance -->
+                            <button onclick="openServiceModal('Cicilan / Leasing', 'leasing')" class="flex flex-col items-center group">
+                                <div class="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 shadow-sm group-hover:scale-105 transition-transform">
+                                    <i class="fa-solid fa-file-invoice-dollar text-xl"></i>
+                                </div>
+                                <span class="text-[11px] font-medium text-slate-700 mt-1.5 text-center">Cicilan</span>
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Preview -->
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-center mb-3">
+                            <h2 class="font-bold text-slate-800 text-sm">Transaksi Terakhir</h2>
+                            <button onclick="switchTab('tab-riwayat')" class="text-xs text-brand-600 font-semibold">Semua</button>
+                        </div>
+                        <div id="recent-transactions-list" class="space-y-3">
+                            <!-- Dynamic Recent Content Here -->
+                        </div>
+                    </div>
+
+                    <!-- Banner Informasi PWA -->
+                    <div class="bg-slate-800 text-slate-200 rounded-2xl p-4 flex items-center space-x-3">
+                        <div class="text-2xl text-amber-400">
+                            <i class="fa-solid fa-mobile-retro"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-xs font-bold text-white">Gunakan Sebagai Aplikasi HP</h4>
+                            <p class="text-[11px] text-slate-400">Tambahkan ke Layar Utama HP untuk akses cepat tanpa browser.</p>
+                        </div>
+                        <button onclick="togglePWAInstallModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs px-3 py-1.5 rounded-xl font-medium transition">
+                            Pasang
+                        </button>
+                    </div>
+
+                </section>
+
+                <!-- TAB 2: RIWAYAT TRANSAKSI -->
+                <section id="tab-riwayat" class="space-y-4 tab-content hidden">
+                    <div class="flex justify-between items-center">
+                        <h2 class="font-bold text-slate-800 text-base">Riwayat Transaksi</h2>
+                        <select id="filter-status" onchange="renderHistory()" class="bg-slate-100 border border-slate-200 text-xs rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none">
+                            <option value="ALL">Semua Status</option>
+                            <option value="Sukses">Sukses</option>
+                            <option value="Proses">Proses</option>
+                            <option value="Gagal">Gagal</option>
+                        </select>
+                    </div>
+
+                    <!-- History List -->
+                    <div id="history-list" class="space-y-3">
+                        <!-- Dynamic History Inserted Here -->
+                    </div>
+                </section>
+
+                <!-- TAB 3: KASIR & MARGIN AGEN -->
+                <section id="tab-kasir" class="space-y-4 tab-content hidden">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-4 shadow-md">
+                        <h2 class="font-bold text-base">Pengaturan Kasir & Margin</h2>
+                        <p class="text-xs text-blue-100 mt-1">Atur keuntungan bawaan (admin fee) untuk struk yang dicetak ke pelanggan.</p>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Default Admin Fee / Margin (Rp)</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-xs text-slate-400 font-bold">Rp</span>
+                                <input type="number" id="default-margin" value="2500" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-sm font-semibold focus:outline-none focus:border-brand-600">
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1">Biaya ini otomatis ditambahkan ke harga modal saat mencetak struk.</p>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-100">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Toko / Loket di Struk</label>
+                            <input type="text" id="store-name" value="PAYFAST CELLULAR" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-brand-600">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan kaki Struk (Footer)</label>
+                            <input type="text" id="store-footer" value="Terima Kasih Atas Kunjungan Anda" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-brand-600">
+                        </div>
+
+                        <button onclick="saveKasirSettings()" class="w-full bg-brand-600 text-white py-2.5 rounded-xl font-bold text-xs shadow hover:bg-brand-700 transition">
+                            Simpan Pengaturan Kasir
+                        </button>
+                    </div>
+
+                    <!-- Simulation Info Banner -->
+                    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 flex gap-3 text-amber-800 text-xs">
+                        <i class="fa-solid fa-print text-xl text-amber-600 mt-0.5"></i>
+                        <div>
+                            <span class="font-bold">Cetak Struk Bluetooth & PDF</span>
+                            <p class="text-[11px] text-amber-700 mt-0.5">Struk dapat langsung dicetak menggunakan PDF generator internal atau dikirimkan via WhatsApp ke pelanggan.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: AKUN AGEN -->
+                <section id="tab-akun" class="space-y-4 tab-content hidden">
+                    <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center space-x-3">
+                        <div id="account-avatar" class="w-14 h-14 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-extrabold text-xl">
+                            BS
+                        </div>
+                        <div>
+                            <h3 id="account-display-name" class="font-bold text-slate-800 text-sm">Budi Santoso</h3>
+                            <p id="account-display-email" class="text-xs text-slate-500">budi.santoso@gmail.com</p>
+                            <span class="inline-block mt-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-md">Verified Agent</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                        <a href="#" class="p-3.5 flex justify-between items-center hover:bg-slate-50">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-shield-halved text-brand-600"></i> Keamanan PIN & Password</span>
+                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </a>
+                        <a href="#" class="p-3.5 flex justify-between items-center hover:bg-slate-50">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-headset text-brand-600"></i> Bantuan & CS WhatsApp</span>
+                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </a>
+                        <a href="#" class="p-3.5 flex justify-between items-center hover:bg-slate-50">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-file-contract text-brand-600"></i> Syarat & Ketentuan</span>
+                            <i class="fa-solid fa-chevron-right text-slate-300"></i>
+                        </a>
+                        <button onclick="handleLogout()" class="w-full p-3.5 flex justify-between items-center text-rose-600 hover:bg-rose-50 text-left">
+                            <span class="flex items-center gap-2.5"><i class="fa-solid fa-right-from-bracket"></i> Keluar Akun</span>
+                            <i class="fa-solid fa-chevron-right text-rose-300"></i>
+                        </button>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- Bottom Navigation Bar -->
+            <nav class="bg-white border-t border-slate-200 px-4 py-2 flex justify-around items-center absolute bottom-0 w-full z-20">
+                <button onclick="switchTab('tab-home')" id="nav-tab-home" class="nav-item flex flex-col items-center text-brand-600">
+                    <i class="fa-solid fa-house text-lg"></i>
+                    <span class="text-[10px] font-semibold mt-1">Beranda</span>
+                </button>
+                <button onclick="switchTab('tab-riwayat')" id="nav-tab-riwayat" class="nav-item flex flex-col items-center text-slate-400 hover:text-brand-600">
+                    <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                    <span class="text-[10px] font-semibold mt-1">Riwayat</span>
+                </button>
+                <button onclick="switchTab('tab-kasir')" id="nav-tab-kasir" class="nav-item flex flex-col items-center text-slate-400 hover:text-brand-600">
+                    <i class="fa-solid fa-calculator text-lg"></i>
+                    <span class="text-[10px] font-semibold mt-1">Kasir</span>
+                </button>
+                <button onclick="switchTab('tab-akun')" id="nav-tab-akun" class="nav-item flex flex-col items-center text-slate-400 hover:text-brand-600">
+                    <i class="fa-regular fa-user text-lg"></i>
+                    <span class="text-[10px] font-semibold mt-1">Akun</span>
+                </button>
+            </nav>
+        </div>
+
+    </div>
+
+    <!-- MODAL: TRANSACTION FORM (Dynamic Service) -->
+    <div id="service-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center">
+        <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[90vh] overflow-y-auto no-scrollbar animate-bottom-slide">
+            
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <span id="modal-icon-container" class="w-8 h-8 rounded-lg bg-blue-100 text-brand-600 flex items-center justify-center font-bold text-sm">
+                        <i id="modal-icon" class="fa-solid fa-mobile-screen"></i>
+                    </span>
+                    <h3 id="modal-title" class="font-bold text-slate-800 text-base">Layanan</h3>
+                </div>
+                <button onclick="closeServiceModal()" class="w-8 h-8 bg-slate-100 text-slate-500 rounded-full flex items-center justify-center text-sm font-bold">✕</button>
+            </div>
+
+            <!-- Input Nomor Tujuan -->
+            <div>
+                <label id="input-label" class="block text-xs font-semibold text-slate-700 mb-1">Nomor HP / ID Pelanggan</label>
+                
+                <!-- Container Pemilihan Game (Khusus Top Up Game) -->
+                <div id="game-select-container" class="hidden mb-3">
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Pilih Game / Aplikasi:</label>
+                    <select id="game-type-select" onchange="onGameTypeChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none focus:border-indigo-600">
+                        <option value="mlbb">Mobile Legends: Bang Bang</option>
+                        <option value="ff">Free Fire</option>
+                        <option value="pubg">PUBG Mobile</option>
+                        <option value="genshin">Genshin Impact</option>
+                        <option value="hok">Honor of Kings</option>
+                        <option value="codm">Call of Duty Mobile</option>
+                        <option value="vlo">Valorant</option>
+                    </select>
+                </div>
+
+                <!-- Container Filter E-Wallet (Khusus E-Wallet) -->
+                <div id="ewallet-filter-container" class="hidden mb-3">
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1.5">Pilih Dompet Digital:</label>
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1" id="ewallet-filter-buttons">
+                        <button onclick="filterEwallet('all')" class="ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-brand-600 text-white shadow-sm" data-brand="all">Semua</button>
+                        <button onclick="filterEwallet('DANA')" class="ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200" data-brand="DANA">DANA</button>
+                        <button onclick="filterEwallet('GoPay')" class="ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200" data-brand="GoPay">GoPay</button>
+                        <button onclick="filterEwallet('OVO')" class="ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200" data-brand="OVO">OVO</button>
+                        <button onclick="filterEwallet('ShopeePay')" class="ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200" data-brand="ShopeePay">ShopeePay</button>
+                        <button onclick="filterEwallet('Maxim')" class="ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200" data-brand="Maxim">Maxim Driver/Cust</button>
+                        <button onclick="filterEwallet('LinkAja')" class="ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200" data-brand="LinkAja">LinkAja</button>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <input type="text" id="target-number" placeholder="Contoh: 081234567890" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-semibold tracking-wide focus:outline-none focus:border-brand-600">
+                    <button class="absolute right-2 top-2 text-brand-600 p-1 hover:bg-blue-50 rounded-lg">
+                        <i class="fa-solid fa-address-book text-base"></i>
+                    </button>
+                </div>
+                
+                <!-- Badge Auto-Detect Provider -->
+                <div id="provider-badge" class="hidden mt-2 flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 p-2 rounded-xl border border-slate-200">
+                    <span class="text-[10px] text-slate-400 font-normal">Provider Detected:</span>
+                    <span id="detected-provider-name" class="text-brand-600 font-extrabold"></span>
+                </div>
+                
+                <!-- Badge Auto-Detect Game ID Player -->
+                <div id="game-player-badge" class="hidden mt-2 p-2.5 rounded-xl border border-indigo-200 bg-indigo-50 text-xs font-medium text-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] text-indigo-600 font-bold uppercase tracking-wide">Pemeriksaan Nickname Game:</span>
+                        <span id="game-check-status" class="text-[10px] text-amber-600 font-semibold animate-pulse">Memeriksa ID...</span>
+                    </div>
+                    <div id="game-player-info" class="font-extrabold text-slate-800 text-xs mt-1 hidden">
+                        <i class="fa-solid fa-circle-check text-emerald-500 mr-1"></i> <span id="game-player-name" class="text-indigo-700"></span>
+                    </div>
+                </div>
+
+                <!-- Badge Auto-Detect Pelanggan PLN -->
+                <div id="pln-player-badge" class="hidden mt-2 p-2.5 rounded-xl border border-amber-200 bg-amber-50 text-xs font-medium text-slate-700">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] text-amber-700 font-bold uppercase tracking-wide">Pemeriksaan Pelanggan PLN:</span>
+                        <span id="pln-check-status" class="text-[10px] text-amber-600 font-semibold animate-pulse">Memeriksa No. Meter...</span>
+                    </div>
+                    <div id="pln-player-info" class="font-bold text-slate-800 text-xs mt-1 hidden">
+                        <div class="flex items-center text-amber-900">
+                            <i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i> Nama: <span id="pln-player-name" class="ml-1 text-slate-900 font-extrabold"></span>
+                        </div>
+                        <div class="text-[11px] text-amber-700 font-medium mt-0.5">
+                            Tarif/Daya: <span id="pln-player-tariff" class="font-semibold text-slate-800">R1M / 900 VA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Options / Denom Selection -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-2">Pilih Nominal / Paket</label>
+                <div id="denom-options" class="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto pr-1">
+                    <!-- Dynamic Product List Populated via JS -->
+                </div>
+            </div>
+
+            <!-- Total & Checkout Button -->
+            <div class="pt-3 border-t border-slate-100 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-slate-500 font-medium">Total Harga Modal:</span>
+                    <span id="checkout-price" class="text-base font-extrabold text-brand-600">Rp 0</span>
+                </div>
+                <button onclick="processTransaction()" id="btn-submit-tx" disabled class="w-full bg-slate-300 text-slate-500 py-3 rounded-xl font-bold text-sm shadow transition">
+                    Konfirmasi & Bayar
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL: STRUK / RECEIPT VIEW -->
+    <div id="receipt-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-4 max-h-[95vh] overflow-y-auto no-scrollbar">
+            
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <h3 class="font-bold text-slate-800 text-sm">Detail Struk Transaksi</h3>
+                <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+            </div>
+
+            <!-- Printable Receipt Box -->
+            <div id="printable-receipt" class="bg-amber-50/50 border border-amber-200/60 p-4 rounded-xl thermal-receipt text-xs text-slate-800 space-y-3">
+                <div class="text-center space-y-1">
+                    <h4 id="receipt-store-name" class="font-bold text-sm uppercase">PAYFAST CELLULAR</h4>
+                    <p class="text-[10px] text-slate-500">Jl. Raya Agen PPOB No. 88</p>
+                    <div class="border-b border-dashed border-slate-300 my-2"></div>
+                </div>
+
+                <div class="space-y-1 text-[11px]">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">No. Reff:</span>
+                        <span id="rcp-reff" class="font-semibold">TRX892301</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Tgl/Waktu:</span>
+                        <span id="rcp-date">24/10/2026 14:20</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Layanan:</span>
+                        <span id="rcp-service" class="font-semibold">Pulsa Telkomsel</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Tujuan:</span>
+                        <span id="rcp-target" class="font-semibold">081234567890</span>
+                    </div>
+                </div>
+
+                <div class="border-b border-dashed border-slate-300 my-2"></div>
+
+                <div class="space-y-1 text-[11px]">
+                    <div class="flex justify-between">
+                        <span>Harga Produk:</span>
+                        <span id="rcp-product-price">Rp 10.500</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Biaya Admin / Service:</span>
+                        <span id="rcp-admin-fee">Rp 2.500</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-xs pt-1 border-t border-slate-300">
+                        <span>TOTAL BAYAR:</span>
+                        <span id="rcp-grand-total">Rp 13.000</span>
+                    </div>
+                </div>
+
+                <div class="border-b border-dashed border-slate-300 my-2"></div>
+                <div class="text-center text-[10px] text-slate-500">
+                    <p id="receipt-footer-text">Terima Kasih Atas Kunjungan Anda</p>
+                    <p class="mt-1 font-sans text-[9px] text-emerald-600 font-semibold">● LUNAS / SUKSES ●</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons for Receipt -->
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="downloadPDFReceipt()" class="bg-brand-600 hover:bg-brand-700 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF
+                </button>
+                <button onclick="shareWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Kirim WA
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- METODE PEMBAYARAN TOP UP -->
+    <div id="topup-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                <h3 class="font-bold text-slate-800 text-sm">Isi Saldo Agen</h3>
+                <button onclick="closeTopUpModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+            </div>
+            <div class="space-y-3">
+                <label class="block text-xs font-semibold text-slate-700">Nominal Deposit</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setTopUpAmount(50000)" class="p-2 border border-slate-200 rounded-xl text-xs font-bold hover:border-brand-600 hover:bg-blue-50">50 Rb</button>
+                    <button onclick="setTopUpAmount(100000)" class="p-2 border border-slate-200 rounded-xl text-xs font-bold hover:border-brand-600 hover:bg-blue-50">100 Rb</button>
+                    <button onclick="setTopUpAmount(250000)" class="p-2 border border-slate-200 rounded-xl text-xs font-bold hover:border-brand-600 hover:bg-blue-50">250 Rb</button>
+                </div>
+                <input type="number" id="topup-input" placeholder="Atau masukkan nominal lain" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-brand-600">
+                
+                <label class="block text-xs font-semibold text-slate-700 pt-2">Metode Pembayaran</label>
+                <select id="topup-method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none">
+                    <option value="QRIS Instant">QRIS Instant (BCA, Mandiri, GoPay, ShopeePay)</option>
+                    <option value="Transfer VA BCA">Virtual Account BCA</option>
+                    <option value="Transfer VA Mandiri">Virtual Account Mandiri</option>
+                    <option value="Transfer VA BRI">Virtual Account BRI</option>
+                    <option value="Transfer DANA">DANA</option>
+                </select>
+
+                <button onclick="processTopUp()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs shadow transition mt-2">
+                    Bayar Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PWA INSTALL GUIDE -->
+    <div id="pwa-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-5 space-y-4 text-center">
+            <div class="w-16 h-16 bg-blue-100 text-brand-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-mobile-screen-button"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base">Instal HD Payment PPOB</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">
+                Nikmati kemudahan bertransaksi cepat tanpa perlu membuka browser berulang kali.
+            </p>
+            <div class="bg-slate-50 p-3 rounded-xl text-left text-xs space-y-2 text-slate-600 border border-slate-100">
+                <p class="font-bold text-slate-800">Cara Menginstal di HP:</p>
+                <p>1. Tekan ikon <b>Menu (Titik 3)</b> atau <b>Share</b> di browser HP Anda.</p>
+                <p>2. Pilih menu <b>"Tambahkan ke Layar Utama"</b> / <b>"Add to Home Screen"</b>.</p>
+                <p>3. Aplikasi HD Payment siap digunakan dari layar HP Anda.</p>
+            </div>
+            <button onclick="togglePWAInstallModal()" class="w-full bg-brand-600 text-white py-2.5 rounded-xl font-bold text-xs shadow">
+                Saya Mengerti
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // State Management & Registered Users Storage
+        let userBalance = 1250000;
+        let selectedProduct = null;
+        let activeReceiptData = null;
+        let adminMargin = 2500;
+        let currentUser = null;
+        let currentCategoryKey = '';
+        let detectedGamePlayerName = '';
+        let detectedPlnCustomerName = '';
+
+        // Initialized registeredUsers database
+        let registeredUsers = [
+            {
+                name: 'Budi Santoso',
+                email: 'budi.santoso@gmail.com',
+                phone: '081234567890',
+                password: 'password123',
+                balance: 1250000
+            }
+        ];
+
+        // Prefix Provider Mapping
+        const providerPrefixes = {
+            'Telkomsel': ['0811', '0812', '0813', '0821', '0822', '0823', '0851', '0852', '0853'],
+            'Indosat': ['0814', '0815', '0816', '0855', '0856', '0857', '0858'],
+            'XL Axiata': ['0817', '0818', '0819', '0859', '0877', '0878'],
+            'Axis': ['0831', '0832', '0833', '0838'],
+            'Tri (3)': ['0895', '0896', '0897', '0898', '0899'],
+            'Smartfren': ['0881', '0882', '0883', '0884', '0885', '0886', '0887', '0888', '0889']
+        };
+
+        // Categorized Pulsa Reguler Products per Provider
+        const pulsaByProvider = {
+            'Telkomsel': [
+                { id: 'tsel_p1', name: 'Pulsa Telkomsel 5.000', price: 5850, desc: 'Masa aktif +7 hari' },
+                { id: 'tsel_p2', name: 'Pulsa Telkomsel 10.000', price: 10800, desc: 'Masa aktif +15 hari' },
+                { id: 'tsel_p3', name: 'Pulsa Telkomsel 20.000', price: 20400, desc: 'Masa aktif +30 hari' },
+                { id: 'tsel_p4', name: 'Pulsa Telkomsel 25.000', price: 25300, desc: 'Masa aktif +30 hari' },
+                { id: 'tsel_p5', name: 'Pulsa Telkomsel 50.000', price: 49850, desc: 'Masa aktif +45 hari' },
+                { id: 'tsel_p6', name: 'Pulsa Telkomsel 100.000', price: 98500, desc: 'Masa aktif +60 hari' }
+            ],
+            'Indosat': [
+                { id: 'isat_p1', name: 'Pulsa Indosat 5.000', price: 5750, desc: 'Masa aktif +7 hari' },
+                { id: 'isat_p2', name: 'Pulsa Indosat 10.000', price: 10700, desc: 'Masa aktif +15 hari' },
+                { id: 'isat_p3', name: 'Pulsa Indosat 25.000', price: 25100, desc: 'Masa aktif +30 hari' },
+                { id: 'isat_p4', name: 'Pulsa Indosat 50.000', price: 49700, desc: 'Masa aktif +45 hari' },
+                { id: 'isat_p5', name: 'Pulsa Indosat 100.000', price: 98000, desc: 'Masa aktif +60 hari' }
+            ],
+            'XL Axiata': [
+                { id: 'xl_p1', name: 'Pulsa XL 5.000', price: 5800, desc: 'Masa aktif +7 hari' },
+                { id: 'xl_p2', name: 'Pulsa XL 10.000', price: 10750, desc: 'Masa aktif +15 hari' },
+                { id: 'xl_p3', name: 'Pulsa XL 25.000', price: 25200, desc: 'Masa aktif +30 hari' },
+                { id: 'xl_p4', name: 'Pulsa XL 50.000', price: 49800, desc: 'Masa aktif +45 hari' },
+                { id: 'xl_p5', name: 'Pulsa XL 100.000', price: 98300, desc: 'Masa aktif +60 hari' }
+            ],
+            'Axis': [
+                { id: 'axis_p1', name: 'Pulsa Axis 5.000', price: 5700, desc: 'Masa aktif +7 hari' },
+                { id: 'axis_p2', name: 'Pulsa Axis 10.000', price: 10650, desc: 'Masa aktif +15 hari' },
+                { id: 'axis_p3', name: 'Pulsa Axis 25.000', price: 25100, desc: 'Masa aktif +30 hari' },
+                { id: 'axis_p4', name: 'Pulsa Axis 50.000', price: 49600, desc: 'Masa aktif +45 hari' }
+            ],
+            'Tri (3)': [
+                { id: 'tri_p1', name: 'Pulsa Tri 5.000', price: 5750, desc: 'Masa aktif +5 hari' },
+                { id: 'tri_p2', name: 'Pulsa Tri 10.000', price: 10700, desc: 'Masa aktif +10 hari' },
+                { id: 'tri_p3', name: 'Pulsa Tri 25.000', price: 25150, desc: 'Masa aktif +20 hari' },
+                { id: 'tri_p4', name: 'Pulsa Tri 50.000', price: 49700, desc: 'Masa aktif +30 hari' }
+            ],
+            'Smartfren': [
+                { id: 'sf_p1', name: 'Pulsa Smartfren 5.000', price: 5500, desc: 'Masa aktif +7 hari' },
+                { id: 'sf_p2', name: 'Pulsa Smartfren 10.000', price: 10500, desc: 'Masa aktif +15 hari' },
+                { id: 'sf_p3', name: 'Pulsa Smartfren 25.000', price: 25000, desc: 'Masa aktif +30 hari' },
+                { id: 'sf_p4', name: 'Pulsa Smartfren 50.000', price: 49500, desc: 'Masa aktif +45 hari' }
+            ]
+        };
+
+        // Categorized Paket Data Internet Products per Provider
+        const dataByProvider = {
+            'Telkomsel': [
+                { id: 'tsel_d1', name: 'Telkomsel Data 2GB / 3 Hari', price: 12500, desc: 'Full 24 Jam Nasional' },
+                { id: 'tsel_d2', name: 'Telkomsel Data OMG 4GB / 30 Hari', price: 26000, desc: '2GB Utama + 2GB OMG' },
+                { id: 'tsel_d3', name: 'Telkomsel Data Combo 10GB / 30 Hari', price: 53000, desc: '8GB Utama + 2GB Telepon' },
+                { id: 'tsel_d4', name: 'Telkomsel Internet Max 25GB', price: 85000, desc: 'Masa aktif 30 Hari' }
+            ],
+            'Indosat': [
+                { id: 'isat_d1', name: 'Freedom Internet 3GB / 5 Hari', price: 13500, desc: 'Full 24 Jam Kuota Utama' },
+                { id: 'isat_d2', name: 'Freedom Internet 8GB / 30 Hari', price: 28000, desc: '100% Kuota Utama' },
+                { id: 'isat_d3', name: 'Freedom Combo 16GB / 30 Hari', price: 48000, desc: '12GB Utama + 4GB Malam' },
+                { id: 'isat_d4', name: 'Freedom Unlimited 30GB / 30 Hari', price: 79000, desc: 'Kuota Apps Tanpa Batas' }
+            ],
+            'XL Axiata': [
+                { id: 'xl_d1', name: 'XL Xtra Combo Flex 4GB / 30 Hari', price: 19500, desc: 'Full 24 Jam' },
+                { id: 'xl_d2', name: 'XL Xtra Combo 10GB / 30 Hari', price: 35000, desc: 'Utama + Bonus Youtube' },
+                { id: 'xl_d3', name: 'XL Xtra Combo Flex 20GB / 30 Hari', price: 59000, desc: 'Termasuk Kuota Lokal' },
+                { id: 'xl_d4', name: 'XL Xtra VIP 35GB / 30 Hari', price: 89000, desc: 'Prioritas Jaringan Cepat' }
+            ],
+            'Axis': [
+                { id: 'axis_d1', name: 'Axis Bronet 1.5GB / 7 Hari', price: 8500, desc: '24 Jam All Network' },
+                { id: 'axis_d2', name: 'Axis Bronet 3GB / 30 Hari', price: 18500, desc: '24 Jam Full Kuota' },
+                { id: 'axis_d3', name: 'Axis Bronet 8GB / 30 Hari', price: 32000, desc: '24 Jam Full Kuota' },
+                { id: 'axis_d4', name: 'Axis OWSEM 16GB / 30 Hari', price: 46000, desc: 'Utama + Games + Sosmed' }
+            ],
+            'Tri (3)': [
+                { id: 'tri_d1', name: 'Tri Happy 3GB / 3 Hari', price: 10000, desc: 'Full 24 Jam' },
+                { id: 'tri_d2', name: 'Tri Happy 9GB / 30 Hari', price: 24000, desc: 'Full 24 Jam All Network' },
+                { id: 'tri_d3', name: 'Tri Happy 18GB / 30 Hari', price: 42000, desc: 'Full 24 Jam' },
+                { id: 'tri_d4', name: 'Tri AlwaysOn (AON) 12GB', price: 50000, desc: 'Masa Aktif Mengikuti Kartu' }
+            ],
+            'Smartfren': [
+                { id: 'sf_d1', name: 'Smartfren Unlimited Nonstop 2GB', price: 12000, desc: '10 Hari + Unlimited Apps' },
+                { id: 'sf_d2', name: 'Smartfren Unlimited Nonstop 6GB', price: 30000, desc: '30 Hari + Access After Limit' },
+                { id: 'sf_d3', name: 'Smartfren Kuota 30GB / 30 Hari', price: 60000, desc: '15GB 24 Jam + 15GB Malam' }
+            ]
+        };
+
+        // Spesifik Katalog Top Up Game per Game ID
+        const gameProductsDatabase = {
+            mlbb: {
+                name: 'Mobile Legends',
+                placeholder: 'Contoh: 12345678 (2104)',
+                items: [
+                    { id: 'ml1', name: 'MLBB 86 Diamond', price: 21500, desc: '80 + 6 Bonus Diamond' },
+                    { id: 'ml2', name: 'MLBB 172 Diamond', price: 42500, desc: '156 + 16 Bonus Diamond' },
+                    { id: 'ml3', name: 'MLBB 257 Diamond', price: 63500, desc: '234 + 23 Bonus Diamond' },
+                    { id: 'ml4', name: 'Weekly Diamond Pass', price: 27500, desc: 'Klaim Total 210 Diamond' }
+                ]
+            },
+            ff: {
+                name: 'Free Fire',
+                placeholder: 'Masukkan Player ID Free Fire',
+                items: [
+                    { id: 'ff1', name: 'Free Fire 140 Diamond', price: 19000, desc: 'Direct ID Fast Process' },
+                    { id: 'ff2', name: 'Free Fire 355 Diamond', price: 47000, desc: 'Direct ID Fast Process' },
+                    { id: 'ff3', name: 'Free Fire 720 Diamond', price: 92000, desc: 'Direct ID Fast Process' },
+                    { id: 'ff4', name: 'Member Mingguan FF', price: 29000, desc: 'Klaim Diamond Harian' }
+                ]
+            },
+            pubg: {
+                name: 'PUBG Mobile',
+                placeholder: 'Masukkan Character ID PUBG (Numeric)',
+                items: [
+                    { id: 'pubg1', name: 'PUBG 60 UC', price: 14500, desc: 'Unknown Cash Global' },
+                    { id: 'pubg2', name: 'PUBG 325 UC', price: 72000, desc: 'Unknown Cash Global' },
+                    { id: 'pubg3', name: 'PUBG 660 UC', price: 142000, desc: 'Unknown Cash Global' }
+                ]
+            },
+            genshin: {
+                name: 'Genshin Impact',
+                placeholder: 'Masukkan User ID (UID 9 Digit)',
+                items: [
+                    { id: 'gi1', name: '60 Genesis Crystals', price: 15500, desc: 'Server Asia / Global' },
+                    { id: 'gi2', name: '300+30 Genesis Crystals', price: 74000, desc: 'Server Asia / Global' },
+                    { id: 'gi3', name: 'Blessing of the Welkin Moon', price: 74500, desc: 'Langganan 30 Hari' }
+                ]
+            },
+            hok: {
+                name: 'Honor of Kings',
+                placeholder: 'Masukkan User ID Honor of Kings',
+                items: [
+                    { id: 'hok1', name: '80 Tokens HOK', price: 15000, desc: 'Instant Top Up' },
+                    { id: 'hok2', name: '240 Tokens HOK', price: 44000, desc: 'Instant Top Up' },
+                    { id: 'hok3', name: '400 Tokens HOK', price: 73000, desc: 'Instant Top Up' }
+                ]
+            },
+            codm: {
+                name: 'Call of Duty Mobile',
+                placeholder: 'Masukkan OpenID CODM',
+                items: [
+                    { id: 'cod1', name: '31 CP CODM', price: 5000, desc: 'COD Points' },
+                    { id: 'cod2', name: '127 CP CODM', price: 20000, desc: 'COD Points' },
+                    { id: 'cod3', name: '620 CP CODM', price: 95000, desc: 'COD Points' }
+                ]
+            },
+            vlo: {
+                name: 'Valorant',
+                placeholder: 'Masukkan Riot ID (Contoh: Player#TAG)',
+                items: [
+                    { id: 'vlo1', name: '475 Valorant Points', price: 55000, desc: 'Riot Direct Topup' },
+                    { id: 'vlo2', name: '1000 Valorant Points', price: 112000, desc: 'Riot Direct Topup' }
+                ]
+            }
+        };
+
+        // Sample Data Products
+        const productsDatabase = {
+            pulsa: [
+                { id: 'p1', name: 'Pulsa Reguler 5.000', price: 5800, desc: 'Masa aktif +7 hari' },
+                { id: 'p2', name: 'Pulsa Reguler 10.000', price: 10750, desc: 'Masa aktif +15 hari' },
+                { id: 'p3', name: 'Pulsa Reguler 25.000', price: 25200, desc: 'Masa aktif +30 hari' },
+                { id: 'p4', name: 'Pulsa Reguler 50.000', price: 49800, desc: 'Promo potongan modal' }
+            ],
+            data: [
+                { id: 'd1', name: 'Paket Data 3GB / 3 Hari', price: 12000, desc: 'Internet 24 Jam' },
+                { id: 'd2', name: 'Paket Data 8GB / 30 Hari', price: 28000, desc: 'Utama Full 24 Jam' },
+                { id: 'd3', name: 'Paket Data 16GB / 30 Hari', price: 48000, desc: 'Utama + Bonus Chat' }
+            ],
+            pln: [
+                { id: 'pln1', name: 'Token PLN 20.000', price: 20500, desc: 'Token Stroom' },
+                { id: 'pln2', name: 'Token PLN 50.000', price: 50500, desc: 'Token Stroom' },
+                { id: 'pln3', name: 'Token PLN 100.000', price: 100500, desc: 'Token Stroom' },
+                { id: 'pln4', name: 'Tagihan PLN Pascapay', price: 0, desc: 'Cek Tagihan Bulanan' }
+            ],
+            ewallet: [
+                { id: 'ew1', brand: 'DANA', name: 'Topup DANA Rp 20.000', price: 20500, desc: 'Saldo Akun Customer' },
+                { id: 'ew2', brand: 'DANA', name: 'Topup DANA Rp 50.000', price: 50500, desc: 'Saldo Akun Customer' },
+                { id: 'ew3', brand: 'DANA', name: 'Topup DANA Rp 100.000', price: 100500, desc: 'Saldo Akun Customer' },
+                { id: 'ew4', brand: 'GoPay', name: 'GoPay Customer Rp 25.000', price: 25500, desc: 'Saldo Instant Customer' },
+                { id: 'ew5', brand: 'GoPay', name: 'GoPay Customer Rp 50.000', price: 50500, desc: 'Saldo Instant Customer' },
+                { id: 'ew6', brand: 'GoPay', name: 'GoPay Driver Rp 50.000', price: 50500, desc: 'Saldo Top Up Driver' },
+                { id: 'ew7', brand: 'OVO', name: 'Topup OVO Rp 20.000', price: 20500, desc: 'Saldo OVO Cash' },
+                { id: 'ew8', brand: 'OVO', name: 'Topup OVO Rp 50.000', price: 50500, desc: 'Saldo OVO Cash' },
+                { id: 'ew9', brand: 'ShopeePay', name: 'ShopeePay Rp 25.000', price: 25500, desc: 'Saldo ShopeePay' },
+                { id: 'ew10', brand: 'ShopeePay', name: 'ShopeePay Rp 50.000', price: 50500, desc: 'Saldo ShopeePay' },
+                { id: 'ew11', brand: 'Maxim', name: 'Maxim Driver Rp 20.000', price: 20500, desc: 'Isi Saldo Driver Maxim' },
+                { id: 'ew12', brand: 'Maxim', name: 'Maxim Customer Rp 20.000', price: 20500, desc: 'Isi Saldo Passenger' },
+                { id: 'ew13', brand: 'LinkAja', name: 'LinkAja Rp 25.000', price: 25500, desc: 'Saldo LinkAja' },
+                { id: 'ew14', brand: 'LinkAja', name: 'LinkAja Rp 50.000', price: 50500, desc: 'Saldo LinkAja' }
+            ],
+            pdam: [
+                { id: 'pdam1', name: 'PDAM Kab. Pasuruan', price: 0, desc: 'Cek Tagihan Air' },
+                { id: 'pdam2', name: 'PDAM Kota Surabaya', price: 0, desc: 'Cek Tagihan Air' },
+                { id: 'pdam3', name: 'PDAM DKI Jakarta', price: 0, desc: 'Cek Tagihan Air' }
+            ],
+            voucher_game: [
+                { id: 'vg1', name: 'Voucher Google Play Rp 20.000', price: 20500, desc: 'Kode Voucher Digital' },
+                { id: 'vg2', name: 'Voucher Google Play Rp 50.000', price: 50500, desc: 'Kode Voucher Digital' },
+                { id: 'vg3', name: 'Steam Wallet IDR 60.000', price: 63000, desc: 'Kode Voucher Digital' },
+                { id: 'vg4', name: 'UniPin Gift Card Rp 50.000', price: 50000, desc: 'Kode Voucher Digital' },
+                { id: 'vg5', name: 'Razer Gold Rp 50.000', price: 51000, desc: 'Kode Voucher Digital' }
+            ],
+            bpjs: [
+                { id: 'bpjs1', name: 'BPJS Kesehatan 1 Bulan', price: 35000, desc: 'Bayar Iuran Bulanan' }
+            ],
+            internet: [
+                { id: 'net1', name: 'IndiHome / Telkom', price: 0, desc: 'Cek Tagihan TV/Internet' },
+                { id: 'net2', name: 'Biznet Home', price: 0, desc: 'Cek Tagihan Internet' }
+            ],
+            leasing: [
+                { id: 'ls1', name: 'FIF Group / Honda', price: 0, desc: 'Cek Cicilan Motor' },
+                { id: 'ls2', name: 'BAF Finance', price: 0, desc: 'Cek Cicilan Motor' }
+            ]
+        };
+
+        // Simulated History Initial Data
+        let historyData = [
+            { id: 'TRX98210', service: 'Pulsa Telkomsel 10.000', target: '081298765432', price: 10800, margin: 2500, status: 'Sukses', date: '24/10/2026 13:45' },
+            { id: 'TRX98209', service: 'Token PLN 50.000', target: '32109847123', price: 50500, margin: 2500, status: 'Sukses', date: '24/10/2026 11:10' },
+            { id: 'TRX98208', service: 'Topup Dana Rp 50.000', target: '085712345678', price: 50500, margin: 2000, status: 'Gagal', date: '23/10/2026 18:20' }
+        ];
+
+        // On Page Load
+        window.onload = function() {
+            renderHistory();
+            renderRecentActivity();
+        };
+
+        // --- AUTHENTICATION LOGIC ---
+        function switchAuthMode(mode) {
+            const loginForm = document.getElementById('form-login');
+            const regForm = document.getElementById('form-register');
+            const btnLogin = document.getElementById('btn-auth-login');
+            const btnReg = document.getElementById('btn-auth-register');
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                btnLogin.className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-brand-600 bg-white shadow-sm";
+                btnReg.className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500 hover:text-slate-800";
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                btnReg.className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-brand-600 bg-white shadow-sm";
+                btnLogin.className = "flex-1 py-2 rounded-lg text-xs font-bold transition text-slate-500 hover:text-slate-800";
+            }
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const phone = document.getElementById('reg-phone').value;
+            const password = document.getElementById('reg-password').value;
+
+            // Check existing
+            const exists = registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase());
+            if (exists) {
+                alert('Email ini sudah terdaftar! Silakan login.');
+                switchAuthMode('login');
+                document.getElementById('login-email').value = email;
+                return;
+            }
+
+            // Save user
+            const newUser = { name, email, phone, password, balance: 100000 };
+            registeredUsers.push(newUser);
+            
+            alert(`Pendaftaran Berhasil!\nSelamat datang, ${name}. Bonus saldo awal Rp 100.000 telah ditambahkan.`);
+            loginUser(newUser);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const user = registeredUsers.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+            if (!user) {
+                alert('Email atau kata sandi salah. Silakan periksa kembali!');
+                return;
+            }
+
+            loginUser(user);
+        }
+
+        function demoQuickLogin() {
+            loginUser(registeredUsers[0]);
+        }
+
+        function loginUser(user) {
+            currentUser = user;
+            userBalance = user.balance || 1250000;
+
+            // Update UI elements with user data
+            document.getElementById('user-balance').innerText = userBalance.toLocaleString('id-ID');
+            document.getElementById('account-display-name').innerText = user.name;
+            document.getElementById('account-display-email').innerText = user.email;
+
+            // Initials avatar
+            const initials = user.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() || 'AG';
+            document.getElementById('account-avatar').innerText = initials;
+
+            // Show Main App & Hide Auth Screen
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            document.getElementById('main-app').classList.add('hidden');
+            document.getElementById('auth-screen').classList.remove('hidden');
+            switchAuthMode('login');
+        }
+
+        // --- NAVIGATION & SERVICES LOGIC ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('text-brand-600');
+                el.classList.add('text-slate-400');
+            });
+            
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) {
+                activeNav.classList.remove('text-slate-400');
+                activeNav.classList.add('text-brand-600');
+            }
+        }
+
+        function openServiceModal(title, categoryKey) {
+            currentCategoryKey = categoryKey;
+            detectedGamePlayerName = '';
+            detectedPlnCustomerName = '';
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('target-number').value = '';
+            document.getElementById('provider-badge').classList.add('hidden');
+            document.getElementById('game-player-badge').classList.add('hidden');
+            document.getElementById('game-player-info').classList.add('hidden');
+            document.getElementById('pln-player-badge').classList.add('hidden');
+            document.getElementById('pln-player-info').classList.add('hidden');
+            
+            const gameSelectContainer = document.getElementById('game-select-container');
+            const ewalletFilterContainer = document.getElementById('ewallet-filter-container');
+            const container = document.getElementById('denom-options');
+            container.innerHTML = '';
+            selectedProduct = null;
+            updateCheckoutButton();
+
+            // Set Label & Elements based on Category
+            const label = document.getElementById('input-label');
+            const targetInput = document.getElementById('target-number');
+            const modalIcon = document.getElementById('modal-icon');
+            const modalIconContainer = document.getElementById('modal-icon-container');
+            
+            // Customize Modal Icon based on Service
+            if (categoryKey === 'pulsa') {
+                modalIcon.className = 'fa-solid fa-mobile-screen-button';
+                modalIconContainer.className = 'w-8 h-8 rounded-lg bg-blue-100 text-brand-600 flex items-center justify-center font-bold text-sm';
+            } else if (categoryKey === 'data') {
+                modalIcon.className = 'fa-solid fa-wifi';
+                modalIconContainer.className = 'w-8 h-8 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center font-bold text-sm';
+            } else if (categoryKey === 'pln') {
+                modalIcon.className = 'fa-solid fa-bolt-lightning';
+                modalIconContainer.className = 'w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm';
+            } else if (categoryKey === 'topup_game') {
+                modalIcon.className = 'fa-solid fa-gamepad';
+                modalIconContainer.className = 'w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm';
+            } else if (categoryKey === 'ewallet') {
+                modalIcon.className = 'fa-solid fa-wallet';
+                modalIconContainer.className = 'w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm';
+            }
+
+            if (categoryKey === 'topup_game') {
+                gameSelectContainer.classList.remove('hidden');
+                ewalletFilterContainer.classList.add('hidden');
+                onGameTypeChange();
+            } else if (categoryKey === 'ewallet') {
+                gameSelectContainer.classList.add('hidden');
+                ewalletFilterContainer.classList.remove('hidden');
+                label.innerText = 'Nomor HP Akun E-Wallet';
+                targetInput.placeholder = 'Contoh: 081234567890';
+                filterEwallet('all');
+            } else {
+                gameSelectContainer.classList.add('hidden');
+                ewalletFilterContainer.classList.add('hidden');
+                if(categoryKey === 'pln') {
+                    label.innerText = 'ID Pelanggan / No. Meter PLN';
+                    targetInput.placeholder = 'Contoh: 32109847123';
+                } else if(categoryKey === 'pdam' || categoryKey === 'bpjs' || categoryKey === 'internet' || categoryKey === 'leasing') {
+                    label.innerText = 'Nomor Pelanggan / Tagihan';
+                    targetInput.placeholder = 'Contoh: 883920192';
+                } else if(categoryKey === 'voucher_game') {
+                    label.innerText = 'Nomor HP Penerima Kode Voucher';
+                    targetInput.placeholder = 'Contoh: 081234567890';
+                } else {
+                    label.innerText = 'Nomor HP Tujuan';
+                    targetInput.placeholder = 'Contoh: 081234567890';
+                }
+                renderProductList(productsDatabase[categoryKey] || []);
+            }
+
+            document.getElementById('service-modal').classList.remove('hidden');
+        }
+
+        function filterEwallet(brand) {
+            document.querySelectorAll('.ewallet-filter-btn').forEach(btn => {
+                if(btn.dataset.brand === brand) {
+                    btn.className = "ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-brand-600 text-white shadow-sm";
+                } else {
+                    btn.className = "ewallet-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200";
+                }
+            });
+
+            const allEwallets = productsDatabase.ewallet || [];
+            if(brand === 'all') {
+                renderProductList(allEwallets);
+            } else {
+                const filtered = allEwallets.filter(item => item.brand === brand);
+                renderProductList(filtered);
+            }
+        }
+
+        function onGameTypeChange() {
+            const selectedGameKey = document.getElementById('game-type-select').value;
+            const gameData = gameProductsDatabase[selectedGameKey];
+            const label = document.getElementById('input-label');
+            const targetInput = document.getElementById('target-number');
+
+            if (gameData) {
+                label.innerText = `User ID ${gameData.name}`;
+                targetInput.placeholder = gameData.placeholder;
+                targetInput.value = '';
+                selectedProduct = null;
+                document.getElementById('checkout-price').innerText = 'Rp 0';
+                renderProductList(gameData.items);
+                updateCheckoutButton();
+            }
+        }
+
+        function renderProductList(items) {
+            const container = document.getElementById('denom-options');
+            container.innerHTML = '';
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.className = 'denom-btn p-3 border border-slate-200 rounded-xl text-left hover:border-brand-600 transition flex flex-col justify-between bg-slate-50/50';
+                btn.onclick = () => selectProduct(btn, item);
+                btn.innerHTML = `
+                    <span class="font-bold text-xs text-slate-800">${item.name}</span>
+                    <span class="text-[10px] text-slate-500">${item.desc}</span>
+                    <span class="text-xs font-extrabold text-brand-600 mt-1">${item.price > 0 ? 'Rp ' + item.price.toLocaleString('id-ID') : 'Cek Tagihan'}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function detectProvider(number) {
+            if (number.length < 4) return null;
+            const prefix = number.substring(0, 4);
+            for (const [provider, prefixes] of Object.entries(providerPrefixes)) {
+                if (prefixes.includes(prefix)) {
+                    return provider;
+                }
+            }
+            return null;
+        }
+
+        function closeServiceModal() {
+            document.getElementById('service-modal').classList.add('hidden');
+        }
+
+        function selectProduct(element, product) {
+            document.querySelectorAll('.denom-btn').forEach(el => {
+                el.classList.remove('border-brand-600', 'bg-blue-50/80');
+                el.classList.add('border-slate-200');
+            });
+            element.classList.add('border-brand-600', 'bg-blue-50/80');
+            selectedProduct = product;
+
+            document.getElementById('checkout-price').innerText = product.price > 0 
+                ? 'Rp ' + product.price.toLocaleString('id-ID') 
+                : 'Menunggu Cek';
+
+            updateCheckoutButton();
+        }
+
+        function updateCheckoutButton() {
+            const num = document.getElementById('target-number').value;
+            const btn = document.getElementById('btn-submit-tx');
+            const gameBadge = document.getElementById('game-player-badge');
+            const gameCheckStatus = document.getElementById('game-check-status');
+            const gamePlayerInfo = document.getElementById('game-player-info');
+            const gamePlayerName = document.getElementById('game-player-name');
+
+            const plnBadge = document.getElementById('pln-player-badge');
+            const plnCheckStatus = document.getElementById('pln-check-status');
+            const plnPlayerInfo = document.getElementById('pln-player-info');
+            const plnPlayerName = document.getElementById('pln-player-name');
+            const plnPlayerTariff = document.getElementById('pln-player-tariff');
+            
+            // Auto detect provider logic for 'pulsa' or 'data' category
+            if (currentCategoryKey === 'pulsa' || currentCategoryKey === 'data') {
+                const providerBadge = document.getElementById('provider-badge');
+                const providerNameEl = document.getElementById('detected-provider-name');
+                const detected = detectProvider(num);
+
+                if (detected) {
+                    providerNameEl.innerText = detected;
+                    providerBadge.classList.remove('hidden');
+                    
+                    if (currentCategoryKey === 'pulsa' && pulsaByProvider[detected]) {
+                        renderProductList(pulsaByProvider[detected]);
+                    } else if (currentCategoryKey === 'data' && dataByProvider[detected]) {
+                        renderProductList(dataByProvider[detected]);
+                    }
+                } else {
+                    providerBadge.classList.add('hidden');
+                    renderProductList(productsDatabase[currentCategoryKey] || []);
+                }
+            }
+
+            // Auto detect PLN Customer Name
+            if (currentCategoryKey === 'pln') {
+                if (num.length >= 8) {
+                    plnBadge.classList.remove('hidden');
+                    plnCheckStatus.classList.remove('hidden');
+                    plnCheckStatus.innerText = 'Memeriksa No. Meter PLN...';
+                    plnPlayerInfo.classList.add('hidden');
+
+                    clearTimeout(window.plnCheckTimer);
+                    window.plnCheckTimer = setTimeout(() => {
+                        const mockPlnCustomers = [
+                            { name: 'SUWARNO / R1M 900VA', tariff: 'R1M / 900 VA' },
+                            { name: 'AGUS SETIAWAN / R1 1300VA', tariff: 'R1 / 1300 VA' },
+                            { name: 'SITI AMINAH / R1M 450VA', tariff: 'R1T / 450 VA' },
+                            { name: 'TOKO MAMUR JAYA / B1 2200VA', tariff: 'B1 / 2200 VA' }
+                        ];
+                        const mockIdx = (num.split('').reduce((a,b)=>a+b.charCodeAt(0),0)) % mockPlnCustomers.length;
+                        const customer = mockPlnCustomers[mockIdx];
+                        detectedPlnCustomerName = customer.name;
+
+                        plnCheckStatus.classList.add('hidden');
+                        plnPlayerName.innerText = customer.name;
+                        plnPlayerTariff.innerText = customer.tariff;
+                        plnPlayerInfo.classList.remove('hidden');
+                    }, 400);
+                } else {
+                    plnBadge.classList.add('hidden');
+                    detectedPlnCustomerName = '';
+                }
+            } else {
+                plnBadge.classList.add('hidden');
+            }
+
+            // Auto detect Game Nickname logic per Game Type
+            if (currentCategoryKey === 'topup_game') {
+                const currentGameKey = document.getElementById('game-type-select').value;
+                const gameInfo = gameProductsDatabase[currentGameKey];
+
+                if (num.length >= 5) {
+                    gameBadge.classList.remove('hidden');
+                    gameCheckStatus.classList.remove('hidden');
+                    gameCheckStatus.innerText = 'Memeriksa ID...';
+                    gamePlayerInfo.classList.add('hidden');
+
+                    clearTimeout(window.gameCheckTimer);
+                    window.gameCheckTimer = setTimeout(() => {
+                        const mockNicknames = {
+                            mlbb: ['ML_ProSlayer', 'MythicGlory_ID', 'BangBudi_ML', 'SavageKing'],
+                            ff: ['FF_Headshooter', 'GuildMaster_FF', 'Budi_BOOYAH'],
+                            pubg: ['PUBG_WinnerWinner', 'ChickenDinner_88', 'ProSniper_PUBG'],
+                            genshin: ['TravelerTeyvat', 'ArchonZhongli', 'KeqingMain_ID'],
+                            hok: ['HOK_Legendary', 'MasterHonor_ID'],
+                            codm: ['Ghost_CODM', 'CaptainPrice_ID'],
+                            vlo: ['Radiant_Pro', 'DuelistJett_ID']
+                        };
+                        const list = mockNicknames[currentGameKey] || ['Player_Hero'];
+                        const mockIdx = (num.split('').reduce((a,b)=>a+b.charCodeAt(0),0)) % list.length;
+                        detectedGamePlayerName = list[mockIdx];
+                        
+                        gameCheckStatus.classList.add('hidden');
+                        gamePlayerName.innerText = `Game: ${gameInfo.name} | Nickname: ${detectedGamePlayerName}`;
+                        gamePlayerInfo.classList.remove('hidden');
+                    }, 500);
+                } else {
+                    gameBadge.classList.add('hidden');
+                    detectedGamePlayerName = '';
+                }
+            } else {
+                gameBadge.classList.add('hidden');
+            }
+
+            if(selectedProduct && num.length >= 4) {
+                btn.disabled = false;
+                btn.classList.remove('bg-slate-300', 'text-slate-500');
+                btn.classList.add('bg-brand-600', 'text-white', 'hover:bg-brand-700');
+            } else {
+                btn.disabled = true;
+                btn.classList.add('bg-slate-300', 'text-slate-500');
+                btn.classList.remove('bg-brand-600', 'text-white', 'hover:bg-brand-700');
+            }
+        }
+
+        document.getElementById('target-number').addEventListener('input', updateCheckoutButton);
+
+        function processTransaction() {
+            const targetNum = document.getElementById('target-number').value;
+            if(!selectedProduct || !targetNum) return;
+
+            const modalPrice = selectedProduct.price;
+
+            if(userBalance < modalPrice) {
+                alert('Saldo keagenan tidak cukup! Silahkan lakukan isi saldo terlebih dahulu.');
+                return;
+            }
+
+            userBalance -= modalPrice;
+            if(currentUser) currentUser.balance = userBalance;
+            document.getElementById('user-balance').innerText = userBalance.toLocaleString('id-ID');
+
+            const txId = 'TRX' + Math.floor(100000 + Math.random() * 900000);
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+
+            let targetDisplay = targetNum;
+            if (currentCategoryKey === 'topup_game' && detectedGamePlayerName) {
+                const currentGameKey = document.getElementById('game-type-select').value;
+                const gameName = gameProductsDatabase[currentGameKey].name;
+                targetDisplay = `${targetNum} (${gameName} - ${detectedGamePlayerName})`;
+            } else if (currentCategoryKey === 'pln' && detectedPlnCustomerName) {
+                targetDisplay = `${targetNum} (${detectedPlnCustomerName})`;
+            }
+
+            const newTx = {
+                id: txId,
+                service: selectedProduct.name,
+                target: targetDisplay,
+                price: modalPrice,
+                margin: adminMargin,
+                status: 'Sukses',
+                date: dateStr
+            };
+
+            historyData.unshift(newTx);
+            renderHistory();
+            renderRecentActivity();
+            closeServiceModal();
+
+            openReceiptModal(newTx);
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            const filter = document.getElementById('filter-status').value;
+            container.innerHTML = '';
+
+            const filtered = filter === 'ALL' ? historyData : historyData.filter(x => x.status === filter);
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Tidak ada transaksi ditemukan.</p>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const badgeColor = item.status === 'Sukses' ? 'bg-emerald-100 text-emerald-700' : (item.status === 'Proses' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700');
+                
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm flex items-center justify-between';
+                card.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-xs text-slate-800">${item.service}</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${badgeColor}">${item.status}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500">${item.target} • <span class="text-slate-400">${item.date}</span></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="font-extrabold text-xs text-slate-800 block">Rp ${(item.price + item.margin).toLocaleString('id-ID')}</span>
+                        <button onclick='openReceiptModal(${JSON.stringify(item)})' class="text-[10px] text-brand-600 font-semibold hover:underline">Struk</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderRecentActivity() {
+            const container = document.getElementById('recent-transactions-list');
+            container.innerHTML = '';
+
+            historyData.slice(0, 3).forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'flex items-center justify-between py-1.5 border-b border-slate-50 last:border-none';
+                el.innerHTML = `
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs text-slate-800">${item.service}</p>
+                            <p class="text-[10px] text-slate-400">${item.target}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-slate-700">Rp ${(item.price + item.margin).toLocaleString('id-ID')}</span>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function openReceiptModal(tx) {
+            activeReceiptData = tx;
+            document.getElementById('rcp-reff').innerText = tx.id;
+            document.getElementById('rcp-date').innerText = tx.date;
+            document.getElementById('rcp-service').innerText = tx.service;
+            document.getElementById('rcp-target').innerText = tx.target;
+            document.getElementById('rcp-product-price').innerText = 'Rp ' + tx.price.toLocaleString('id-ID');
+            document.getElementById('rcp-admin-fee').innerText = 'Rp ' + tx.margin.toLocaleString('id-ID');
+            document.getElementById('rcp-grand-total').innerText = 'Rp ' + (tx.price + tx.margin).toLocaleString('id-ID');
+
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.add('hidden');
+        }
+
+        function saveKasirSettings() {
+            adminMargin = parseInt(document.getElementById('default-margin').value) || 0;
+            const storeName = document.getElementById('store-name').value;
+            const storeFooter = document.getElementById('store-footer').value;
+
+            document.getElementById('receipt-store-name').innerText = storeName;
+            document.getElementById('receipt-footer-text').innerText = storeFooter;
+
+            alert('Pengaturan Kasir & Margin Struk Berhasil Disimpan!');
+        }
+
+        function downloadPDFReceipt() {
+            const element = document.getElementById('printable-receipt');
+            const opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     `Struk_${activeReceiptData ? activeReceiptData.id : 'PPOB'}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a6', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function shareWhatsApp() {
+            if(!activeReceiptData) return;
+            const total = activeReceiptData.price + activeReceiptData.margin;
+            const text = `*STRUK PEMBAYARAN RESMI*\nNo Reff: ${activeReceiptData.id}\nLayanan: ${activeReceiptData.service}\nTujuan: ${activeReceiptData.target}\nTotal Bayar: Rp ${total.toLocaleString('id-ID')}\nStatus: *LUNAS / SUKSES*\n\nTerima Kasih!`;
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        function openTopUpModal() {
+            document.getElementById('topup-modal').classList.remove('hidden');
+        }
+        function closeTopUpModal() {
+            document.getElementById('topup-modal').classList.add('hidden');
+        }
+        function setTopUpAmount(amt) {
+            document.getElementById('topup-input').value = amt;
+        }
+        function processTopUp() {
+            const amt = parseInt(document.getElementById('topup-input').value);
+            if(!amt || amt < 10000) {
+                alert('Minimal isi saldo adalah Rp 10.000');
+                return;
+            }
+            userBalance += amt;
+            if(currentUser) currentUser.balance = userBalance;
+            document.getElementById('user-balance').innerText = userBalance.toLocaleString('id-ID');
+            closeTopUpModal();
+            alert(`Berhasil menambah saldo deposito sebesar Rp ${amt.toLocaleString('id-ID')}`);
+        }
+
+        function togglePWAInstallModal() {
+            const modal = document.getElementById('pwa-modal');
+            modal.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>
